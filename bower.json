@@ -22,7 +22,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.3",
     "paper-menu": "Polymerelements/paper-menu#~1.1.1",
-    "paper-input": "Polymerelements/paper-input#~1.0.15",
+    "paper-input": "Polymerelements/paper-input#^1.0.15",
     "paper-item": "Polymerelements/paper-item#~1.0.3",
     "iron-icons": "Polymerelements/iron-icons#~1.0.4",
     "paper-icon-button": "Polymerelements/paper-icon-button#~1.0.6",
