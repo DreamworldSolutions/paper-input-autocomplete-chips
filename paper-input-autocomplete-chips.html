@@ -437,6 +437,13 @@ Example:
         notCircular: {
           type: Boolean,
           value: false
+        },
+        
+        value:{
+          type: Array,
+          value: function(){
+            return [];
+          }
         }
       },
 
@@ -451,6 +458,20 @@ Example:
       listeners: {
         'tap': '_onTap',
         'iron-input-validate': '_onIronInputValidate'
+      },
+      
+      _setValue : function(){
+        if(!this.selectedObjects){
+          return;
+        }
+        
+        var aValue = [];
+        
+        this.selectedObjects.forEach(function(obj){
+          aValue.push(obj.text);
+        });
+        
+        this.set('value', aValue);
       },
 
       _onTap: function (e) {
@@ -527,6 +548,7 @@ Example:
         this._updatePlaceholderAfterSelected();
         this._updateHiddenInputTextForFloatLabel();
         this.selectedObject = null;
+        this._setValue();
       },
 
       _updatePlaceholderAfterSelected: function () {
