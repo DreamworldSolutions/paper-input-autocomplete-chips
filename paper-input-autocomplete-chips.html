@@ -80,6 +80,8 @@ Example:
       .input-container input#input {
         display: block;
         resize: none;
+        
+        @apply(--paper-input-autocomplete-chips-input);
       }
 
       paper-input-container {
@@ -92,6 +94,8 @@ Example:
         --paper-input-container-label-floating: {
           top: 0;
           bottom: auto;
+          
+          @apply(--paper-input-autocomplete-chips--floating-label);
         };
 
         --paper-input-container-input: {
@@ -433,6 +437,13 @@ Example:
         notCircular: {
           type: Boolean,
           value: false
+        },
+        
+        value:{
+          type: Array,
+          value: function(){
+            return [];
+          }
         }
       },
 
@@ -447,6 +458,20 @@ Example:
       listeners: {
         'tap': '_onTap',
         'iron-input-validate': '_onIronInputValidate'
+      },
+      
+      _setValue : function(){
+        if(!this.selectedObjects){
+          return;
+        }
+        
+        var aValue = [];
+        
+        this.selectedObjects.forEach(function(obj){
+          aValue.push(obj.text);
+        });
+        
+        this.set('value', aValue);
       },
 
       _onTap: function (e) {
@@ -523,6 +548,7 @@ Example:
         this._updatePlaceholderAfterSelected();
         this._updateHiddenInputTextForFloatLabel();
         this.selectedObject = null;
+        this._setValue();
       },
 
       _updatePlaceholderAfterSelected: function () {
