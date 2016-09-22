@@ -457,7 +457,8 @@ Example:
 
       listeners: {
         'tap': '_onTap',
-        'iron-input-validate': '_onIronInputValidate'
+        'iron-input-validate': '_onIronInputValidate',
+        'focus': '_setFocus'
       },
       
       _setValue : function(){
@@ -814,6 +815,10 @@ Example:
         if (this.searchOnGotFocus) {
           this._search(this._safeInputValue);
         }
+      },
+      
+      _setFocus: function(){
+        this.$.input.focus();
       },
     });
   </script>
