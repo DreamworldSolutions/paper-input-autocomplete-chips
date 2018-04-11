@@ -231,30 +231,30 @@ Example:
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
-  <template is="dom-if" if="{{!item.imgUrl}}">
+            <template is="dom-if" if="{{!item.imgUrl}}">
               <div class="icon avatar-chip-icon">[[getInitialsFrom(item.text)]]</div>
             </template>
-  </paper-chip>
-  </template>
-  <div id="inputContainer" class="input-container">
-    <input is="iron-input" id="input" class="autocomplete-input" on-keyup="_local_keyup" on-keydown="_local_keydown" on-paste="_local_paste"
-      on-blur="_local_blur" on-focus="_onInputFocus" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]"
-      disabled$="[[disabled]]" bind-value="{{inputValue}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]"
-      allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]"
-      autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]"
-      min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[_placeholderAfterSelected]]" readonly$="[[readonly]]"
-      list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange"
-      tabindex$="[[tabindex]]" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
-  </div>
-  </div>
+          </paper-chip>
+        </template>
+        <div id="inputContainer" class="input-container">
+          <input is="iron-input" id="input" class="autocomplete-input" on-keyup="_local_keyup" on-keydown="_local_keydown" on-paste="_local_paste"
+            on-blur="_local_blur" on-focus="_onInputFocus" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]"
+            disabled$="[[disabled]]" bind-value="{{inputValue}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]"
+            allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]"
+            autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]"
+            min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[_placeholderAfterSelected]]" readonly$="[[readonly]]"
+            list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange"
+            tabindex$="[[tabindex]]" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
+        </div>
+    </div>
 
-  <div class="suffix-container" suffix>
-    <content select="[suffix]"></content>
-  </div>
+    <div class="suffix-container" suffix>
+      <content select="[suffix]"></content>
+    </div>
 
-  <template is="dom-if" if="[[errorMessage]]">
-        <paper-input-error>[[errorMessage]]</paper-input-error>
-      </template>
+    <template is="dom-if" if="[[errorMessage]]">
+      <paper-input-error>[[errorMessage]]</paper-input-error>
+    </template>
   </paper-input-container>
   <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
     <template is="dom-if" if="{{_loading}}">
@@ -420,11 +420,6 @@ Example:
           reflectToAttribute: true
         },
 
-        pasteHandler: {
-          type: Function,
-          notify: true
-        },
-
         removeSelectedFromSuggestions: {
           type: Boolean,
           value: false
@@ -433,7 +428,17 @@ Example:
         notCircular: {
           type: Boolean,
           value: false
-        }
+        },
+
+        withCustomSuggestionBoxPosition: {
+          type: Boolean,
+          value: false
+        },
+	      
+        noDisplayInputEditLine: {
+          type: Boolean,
+          value: false
+        },
       },
 
       get _paperInputContainerElement() {
@@ -442,6 +447,10 @@ Example:
 
       get hasSelectedObjects() {
         return ((this.selectedObjects) && (this.selectedObjects.length > 0));
+      },
+
+      get $input() {
+        return this.$.input;
       },
 
       listeners: {
@@ -485,7 +494,7 @@ Example:
         '_loadingChanged(_loading)',
         '_calculateSuggestionPanelPosition(suggestionsPosition)',
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
-        '_cptCanInputText(readOnly, removeOnly)'
+        '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)'
       ],
 
       _onInputValueChange: function (inputValue) {
@@ -634,12 +643,16 @@ Example:
           return canInputText;
       },
 
-      _cptCanInputText: function (readOnly, removeOnly) {
-          if (this._canInputText(readOnly, removeOnly)) {
-              this.classList.remove('no-display-input-edit-line');
-          } else {
-              this.classList.add('no-display-input-edit-line');
-          }
+      _cptInputTextStyle: function (readOnly, removeOnly, noDisplayInputEditLine) {
+	  if (noDisplayInputEditLine) {
+	      this.classList.add('no-display-input-edit-line');	  
+	  } else {
+	      if (this._canInputText(readOnly, removeOnly)) {
+	          this.classList.remove('no-display-input-edit-line');
+    	      } else {
+	          this.classList.add('no-display-input-edit-line');
+	      }
+	  }
 
           this.updateStyles();
       },
@@ -678,15 +691,23 @@ Example:
       },
 
       _calculateSuggestionPanelPosition: function () {
-        if (this.suggestionsPosition === 'top') {
-          var inputRect = this.$.input.getBoundingClientRect();
-          var diffBottom = 8; // Bottom margin from paper-input-container
-          var deltaBottom = inputRect.height + diffBottom;
-          this.$.suggestionsPanel.style.top = '';
-          this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
-        } else if (this.suggestionsPosition === 'bottom') {
-          this.$.suggestionsPanel.style.top = '';
-          this.$.suggestionsPanel.style.bottom = '';
+        if (this.withCustomSuggestionBoxPosition) {
+          fire('custom-suggestion-position', {
+            inputContainer: this.$.paperInputContainer,
+            inputElement: this.$input,
+            suggestionPanel: this.$.suggestionsPanel
+          });
+        } else {
+          if (this.suggestionsPosition === 'top') {
+            var inputRect = this.$input.getBoundingClientRect();
+            var diffBottom = 8; // Bottom margin from paper-input-container
+            var deltaBottom = inputRect.height + diffBottom;
+            this.$.suggestionsPanel.style.top = '';
+            this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
+          } else if (this.suggestionsPosition === 'bottom') {
+            this.$.suggestionsPanel.style.top = '';
+            this.$.suggestionsPanel.style.bottom = '';
+          }
         }
       },
 
@@ -789,6 +810,11 @@ Example:
           this._search(this._safeInputValue);
         }
       },
+
+      clear: function() {
+        this.selectedObjects = [];
+      },
+      
     });
   </script>
 </dom-module>
