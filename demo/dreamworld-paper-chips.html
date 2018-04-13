@@ -1,0 +1,166 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-material/paper-material.html">
+<link rel="import" href="../paper-input-autocomplete-chips.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-icons/social-icons.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../paper-input-autocomplete.html">
+<dom-module id="dreamworld-paper-chips">
+    <template>
+        <style>
+            :host {
+                background-color: darkgrey;
+            }
+            paper-input-autocomplete-chips{
+                --paper-input-container:{
+                  padding-top: 16px;
+                };
+                
+                 --paper-input-autocomplete-chips--floating-label:{
+                  font-size: 16px;
+                };
+                
+                --paper-input-autocomplete-chips-input:{
+                  margin-bottom: 4px;
+                  
+                };
+              }
+            :host paper-material {
+                width: 400px;
+                background-color: white;
+                padding: 24px;
+                margin: 24px;
+            }
+
+            paper-material.fixed-paper {
+                z-index: 99;
+                position: fixed;
+                top: 10px;
+                right: 24px;
+                bottom: 0px;
+                margin-bottom: 24px;
+                overflow-y: auto;
+            }
+
+
+          #colored-chips::content paper-chip[data-tag="yellow"] .main-container {
+            backgroun-color: yellow;
+          }
+          #colored-chips::content paper-chip[data-tag="red"] .main-container {
+            backgroun-color: red;
+          }
+        </style>
+        
+        <paper-material class="demo-paper">
+            <p>No default selected, No suggestion</p>
+            <paper-input-autocomplete-chips 
+            
+              label="Chips"
+              paste-handler
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              no-chip-image
+              local-candidates="{{states}}">
+            </paper-input-autocomplete-chips>
+        </paper-material>
+        <paper-material class="demo-paper">
+            <p>No default selected, Has suggestion</p>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+              paste-handler
+              search-on-got-focus
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
+        <paper-material class="demo-paper">
+            <p>No default selected, Has suggestion, maxSelectedItems == 2</code>:</p>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+              paste-handler
+              search-on-got-focus
+              max-selected-items="2"
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
+        <paper-material class="demo-paper">
+            <p>Has default selected, No other suggestion, maxSelectedItem === 5</code>:</p>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+              paste-handler
+              pre-selected-value="{{selected}}"
+              max-selected-items="5"
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
+        <paper-material class="demo-paper">
+            <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+               id="colored-chips"
+              paste-handler
+              search-on-got-focus
+              pre-selected-value="{{selected}}"
+              max-selected-items="5"
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
+    </template>
+    <script>
+        Polymer({
+
+            is: 'dreamworld-paper-chips',
+            properties: {
+                states: {
+                    type: Array,
+                    value: function () {
+                        return [
+                          {
+                            text: "Alabama",
+                            tag: 'green'
+                        },
+                        {
+                            text: "Alaska",
+                            tag: 'yellow'
+                        },
+                        {
+                            text: "American Samoa",
+                            tag: 'red'
+                        },
+                        {
+                            text: "Arizona"
+                        },
+                        {
+                            text: "Arkansas"
+                        },
+                        {
+                            text: "California",
+                        },
+                        {
+                            text: "Colorado"
+                        }
+                        ];
+                    }
+                },
+                selected: {
+                  type: Array,
+                  value: function () {
+                      return ['Alabama','California','Arizona'];
+                  }
+              }
+            },
+        })
+    </script>
+</dom-module>
