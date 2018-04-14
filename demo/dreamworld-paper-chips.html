@@ -54,8 +54,21 @@
         
         <paper-material class="demo-paper">
             <p>No default selected, No suggestion</p>
+            <paper-input></paper-input>
             <paper-input-autocomplete-chips 
             
+              label="Chips"
+              paste-handler
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              no-chip-image
+              local-candidates="{{states}}">
+            </paper-input-autocomplete-chips>
+            <paper-input></paper-input>
+        </paper-material>
+        <paper-material class="demo-paper">
+            <p>No default selected, No suggestion</p>
+            <paper-input-autocomplete-chips 
               label="Chips"
               paste-handler
               token-accept-key-codes="188"
@@ -77,12 +90,12 @@
             </paper-input-autocomplete-chips>
         </paper-material>
         <paper-material class="demo-paper">
-            <p>No default selected, Has suggestion, maxSelectedItems == 2</code>:</p>
+            <p>No default selected, Has suggestion, maxSelectedItems ==5</code>:</p>
             <paper-input-autocomplete-chips 
               label="Chips"
               paste-handler
               search-on-got-focus
-              max-selected-items="2"
+              max-selected-items="5"
               token-accept-key-codes="188"
               allow-select-unknown-token
               local-candidates="{{states}}"
@@ -106,7 +119,7 @@
             <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
             <paper-input-autocomplete-chips 
               label="Chips"
-               id="colored-chips"
+              id="colored-chips"
               paste-handler
               search-on-got-focus
               pre-selected-value="{{selected}}"
@@ -132,11 +145,11 @@
                             tag: 'green'
                         },
                         {
-                            text: "Alaska",
+                            text: "dlaska",
                             tag: 'yellow'
                         },
                         {
-                            text: "American Samoa",
+                            text: "bmerican Samoa",
                             tag: 'red'
                         },
                         {

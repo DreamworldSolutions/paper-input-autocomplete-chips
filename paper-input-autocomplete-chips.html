@@ -125,7 +125,7 @@ Example:
         right:0;
         position: absolute;
         z-index: 10;
-        max-height: var(--autocomplete-suggestions-container-max-height, 112px);
+        height: auto;
         overflow-y: auto;
         opacity: 1;
 
@@ -229,8 +229,8 @@ Example:
       <label hidden$="[[!label]]">[[label]]</label>
 
       <div class="complete-input-container" id="inputTagsContainer">
-				<template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
+        <template is="dom-repeat" items="[[selectedObjects]]">
+          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]"  on-keyup="_onChipSelected" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
@@ -277,13 +277,15 @@ Example:
                 <template is="dom-if" if="{{!item.imgUrl}}">
                   <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
                 </template>
+                  <paper-item-body>
+                    <div>[[item.text]]</div>
+                  </paper-item-body>
               </template>
               <template is="dom-if" if="[[!addSuggetionsImage]]">
-                [[item.text]]
-              </template>
-      <paper-item-body>
+              <paper-item-body>
         <div>[[item.text]]</div>
       </paper-item-body>
+              </template>
       </paper-icon-item>
       </template>
       </template>
@@ -431,7 +433,7 @@ Example:
           value: false,
           reflectToAttribute: true
         },
-
+        
         removeSelectedFromSuggestions: {
           type: Boolean,
           value: false
@@ -458,11 +460,15 @@ Example:
           type: Boolean,
           value: false
         },
-	      
+        
         noDisplayInputEditLine: {
           type: Boolean,
           value: false
         },
+        
+        _filtredLocalCandidates: {
+          type: Array
+        }
       },
 
       get _paperInputContainerElement() {
@@ -479,8 +485,7 @@ Example:
 
       listeners: {
         'tap': '_onTap',
-        'iron-input-validate': '_onIronInputValidate',
-        'focus': '_setFocus'
+        'iron-input-validate': '_onIronInputValidate'
       },
       
       _onPreSelectedValueChange: function(){
@@ -547,9 +552,33 @@ Example:
         '_loadingChanged(_loading)',
         '_calculateSuggestionPanelPosition(suggestionsPosition)',
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
-        '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)'
+        '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)',
+        '_manageFilteredCandidates(localCandidates.splices)',
+        '_manageFilteredCandidates(selectedObjects.splices)'
       ],
-
+      
+      _onChipSelected: function(e){
+        console.log(e)
+        if(e.which === 46) {
+          this._onChipRemove(e);
+          if(e.target && e.target.previousElementSibling && e.target.previousElementSibling.tagName && e.target.previousElementSibling.tagName === 'PAPER-CHIP'){
+            e.target.previousElementSibling.focus();
+            return;
+          }  
+          if(e.target && e.target.nextElementSibling && e.target.nextElementSibling.tagName && e.target.nextElementSibling.tagName === 'PAPER-CHIP'){
+            e.target.nextElementSibling.focus();
+            return;
+          } 
+         this.$.input.focus();
+        }
+      },
+      _manageFilteredCandidates: function(){
+        if(!this.localCandidates || !this.selectedObjects) {
+          return;
+        }
+        this.set('_filtredLocalCandidates', _.differenceBy(this.localCandidates, this.selectedObjects, 'text'));
+      },
+      
       _onInputValueChange: function (inputValue) {
         var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
 
@@ -867,12 +896,7 @@ Example:
 
       clear: function() {
         this.selectedObjects = [];
-      },
-      
-      _setFocus: function(){
-        this.$.input.focus();
-      },
-      
+      }
     });
   </script>
 </dom-module>

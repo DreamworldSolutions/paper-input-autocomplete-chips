@@ -7,8 +7,8 @@
   * @polymerBehavior WebPaperElem.InputAutoCompleteBehavior
   */
   WebPaperElem.InputAutoCompleteBehaviorImpl = {
-	  properties: {
-	    
+    properties: {
+      
       delimiters: {
         type: Array
       },
@@ -148,7 +148,7 @@
         value: false
       },
 
-	  },
+    },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
       this.tokenAcceptKeyCodesArray = (newValue) ? newValue.split(',') : [];
@@ -358,14 +358,20 @@
       //console.debug('[_blur]', e);
       var relativeFocusedTarget = e.relatedTarget || e.explicitOriginalTarget;
       if ((!relativeFocusedTarget) || ((relativeFocusedTarget) && (!this._menuElement.contains(relativeFocusedTarget)))) {
-        this._createChip();
+        this.setSuggestions([]);
+        if(this.inputValue){
+          this._createChip();
+          this.inputValue = '';
+        }
       }
     },
 
     _paste: function(e){
       var text = '';
       var data = [];
-
+      this.async(function(){
+        this._createChip();
+      },10)
       if (this.withCustomPasteActionHandler) {
         var evtObj = {
           clipboardData : e.clipboardData
@@ -500,7 +506,7 @@
 
       this.debounce('search', function(){
         if ((term === '') && (!this.searchIfEmpty)) {
-          this.setSuggestions(this.localCandidates);
+          this.setSuggestions(this._filtredLocalCandidates);
           return;
         }
 
