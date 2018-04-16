@@ -11,7 +11,14 @@
         <style>
             :host {
                 background-color: darkgrey;
-            }
+                --suggetions-box-items: {
+                  background-color: yellow;
+                }
+                --suggetions-box-item-selected: {
+                    background-color: green;
+                    color: red;
+                }
+            } 
             paper-input-autocomplete-chips{
                 --paper-input-container:{
                   padding-top: 16px;
@@ -32,7 +39,7 @@
                 padding: 24px;
                 margin: 24px;
             }
-
+            
             paper-material.fixed-paper {
                 z-index: 99;
                 position: fixed;
@@ -51,7 +58,21 @@
             backgroun-color: red;
           }
         </style>
-        
+                <paper-material class="demo-paper">
+            <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
+            <paper-input></paper-input>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+              id="colored-chips"
+              search-on-got-focus
+              max-suggestions="2"
+              pre-selected-value="{{selected}}"
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
         <paper-material class="demo-paper">
             <p>No default selected, No suggestion</p>
             <paper-input></paper-input>
@@ -115,21 +136,7 @@
               no-chip-image>
             </paper-input-autocomplete-chips>
         </paper-material>
-        <paper-material class="demo-paper">
-            <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
-            <paper-input-autocomplete-chips 
-              label="Chips"
-              id="colored-chips"
-              paste-handler
-              search-on-got-focus
-              pre-selected-value="{{selected}}"
-              max-selected-items="5"
-              token-accept-key-codes="188"
-              allow-select-unknown-token
-              local-candidates="{{states}}"
-              no-chip-image>
-            </paper-input-autocomplete-chips>
-        </paper-material>
+
     </template>
     <script>
         Polymer({

@@ -338,7 +338,7 @@
       } else if (this._checkTokenAcceptKeyCode(e.which)){
         // Return Key
         //console.warn('[_keyup]: IF01');
-        this._createChip();
+        this._createChip(e);
 
         if (this.searchOnGotFocus) {
           this._search(this._safeInputValue);
@@ -406,7 +406,10 @@
       }
     },
 
-    _createChip: function(){
+    _createChip: function(e){
+      if(e && e.which){
+        var keyCode = e.which;
+      }
       if(this.validateOnAccept && !this._inputElement.validate() ){
         // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
         this._inputElement.invalid = false;
@@ -416,12 +419,13 @@
       var suggestionFocusedItem = this._suggestionsFocusedItem;
 
       if ((suggestionFocusedItem) || (!this._inputElement.invalid )) {
-        if (suggestionFocusedItem) {
+        if (suggestionFocusedItem && keyCode !== 188 && keyCode !== 9) {
           this._setSelectedItem(suggestionFocusedItem);
         } else {
           this._setSelectedItem();
         }
       } else{
+        this._setSelectedItem();
         this.setSuggestions([]);
       }
     },
@@ -466,7 +470,6 @@
         }
       } else if (this.allowSelectUnknownToken) {
 
-        if (!this.invalid) {
           var selectedItemText = this._safeInputValue;
           
           if (selectedItemText.length > 0) {
@@ -489,7 +492,6 @@
               this.xmlhttp.abort();
             }
           }
-        }
       }
 
       if(this.validateOnAccept){

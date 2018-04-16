@@ -85,6 +85,7 @@ Example:
       }
 
       paper-input-container {
+        padding: 0px 0;
         --paper-input-container-label: {
           top: auto;
           height: 38px;
@@ -138,10 +139,12 @@ Example:
 
       paper-material.autocomplete-suggestion-container .suggestion-item {
         cursor: pointer;
+        @apply(--suggetions-box-items);
       }
 
       paper-material.autocomplete-suggestion-container .iron-selected {
         background: #E0E0E0;
+        @apply(--suggetions-box-item-selected);
       }
 
       .suggestion-item .avatar-chip-icon {
@@ -240,7 +243,7 @@ Example:
           </paper-chip>
         </template>
         <div id="inputContainer" class="input-container">
-          <input is="iron-input" id="input" class="autocomplete-input" on-keyup="_local_keyup" on-keydown="_local_keydown" on-paste="_local_paste"
+          <input is="iron-input" id="input" class="autocomplete-input" on-click="_onInputClicked" on-keyup="_local_keyup" on-keydown="_local_keydown" on-paste="_local_paste"
             on-blur="_local_blur" on-focus="_onInputFocus" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]"
             disabled$="[[disabled]]" bind-value="{{inputValue}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]"
             allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]"
@@ -585,6 +588,9 @@ Example:
         this.set('_filtredLocalCandidates', _.differenceBy(this.localCandidates, this.selectedObjects, 'text'));
       },
       
+      _onInputClicked: function(){
+        this._search(this._safeInputValue);
+      },
       _onInputValueChange: function (inputValue) {
         var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
 
@@ -620,6 +626,7 @@ Example:
         this._updatePlaceholderAfterSelected();
         this._updateHiddenInputTextForFloatLabel();
         this.selectedObject = null;
+        this.$.input.focus();
         this._setValue();
       },
 
@@ -895,7 +902,7 @@ Example:
 
       _onInputFocus: function (e) {
         this.fire('input-focused');
-        if (this.searchOnGotFocus) {
+        if (this.searchOnGotFocus && !this._focused) {
           this._search(this._safeInputValue);
         }
       },
