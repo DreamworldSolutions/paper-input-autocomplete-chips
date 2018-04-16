@@ -301,6 +301,7 @@
       var suggestionsMenu = this._menuElement;
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
         this._setSelectedItem(e.currentTarget);
+        this.$.input.focus();
         e.stopPropagation();
       }
     },

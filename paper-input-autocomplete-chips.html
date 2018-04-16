@@ -448,7 +448,13 @@ Example:
           type: Array,
           value: function(){
             return [];
-          }
+          },
+        },
+        
+        _focused: {
+          type: Boolean,
+          value: false,
+          observer: '_onFocusedChanged'
         },
         
         preSelectedValue: {
@@ -554,11 +560,11 @@ Example:
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
         '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)',
         '_manageFilteredCandidates(localCandidates.splices)',
-        '_manageFilteredCandidates(selectedObjects.splices)'
+        '_manageFilteredCandidates(selectedObjects.splices)',
+        '_manageFocused(focused)'
       ],
       
       _onChipSelected: function(e){
-        console.log(e)
         if(e.which === 46) {
           this._onChipRemove(e);
           if(e.target && e.target.previousElementSibling && e.target.previousElementSibling.tagName && e.target.previousElementSibling.tagName === 'PAPER-CHIP'){
@@ -896,6 +902,26 @@ Example:
 
       clear: function() {
         this.selectedObjects = [];
+      },
+      _manageFocused: function(e){
+        this.cancelDebouncer('focusedChanged');
+        
+        if(this.focused){
+          this.set('_focused', true);
+          return;
+        }
+        
+        this.debounce('focusedChanged', function(){
+          if(!this.focused){
+            this.set('_focused', false);
+          }
+        },150)
+      },
+      
+      _onFocusedChanged: function(){
+        if(this._focused){
+          this.$.input.focus();
+        }
       }
     });
   </script>
