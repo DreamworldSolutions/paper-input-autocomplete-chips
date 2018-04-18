@@ -57,8 +57,28 @@
           #colored-chips::content paper-chip[data-tag="red"] .main-container {
             backgroun-color: red;
           }
+          .fix-width {
+            height: 220px;
+            overflow: auto;
+          }
         </style>
-                <paper-material class="demo-paper">
+      <paper-material class="demo-paper fix-width">
+            <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
+            <paper-input></paper-input>
+            <paper-input-autocomplete-chips 
+              label="Chips"
+              id="colored-chips"
+              search-on-got-focus
+              max-suggestions="99"
+              suggestions-position="bottom"
+              pre-selected-value="{{selected}}"
+              token-accept-key-codes="188"
+              allow-select-unknown-token
+              local-candidates="{{states}}"
+              no-chip-image>
+            </paper-input-autocomplete-chips>
+        </paper-material>
+      <paper-material class="demo-paper">
             <p>Has default selected, Has suggestion, maxSelectedItems, colored items</p>
             <paper-input></paper-input>
             <paper-input-autocomplete-chips 
@@ -180,6 +200,13 @@
                       return ['Alabama','California','Arizona'];
                   }
               }
+            },
+            listeners: {
+              'custom-suggestion-position': '_customSuggetionPosition'
+            },
+            
+            _customSuggetionPosition: function(e){
+              console.log(e)
             },
         })
     </script>

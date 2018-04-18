@@ -1,6 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../iron-dropdown/iron-dropdown.html">
+
 <link rel="import" href="../paper-input/paper-input-behavior.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input-error.html">
@@ -120,21 +122,9 @@ Example:
       div.prefix-content {
         height: 100%;
       }
-
-      paper-material.autocomplete-suggestion-container {
-        left:0;
-        right:0;
-        position: absolute;
-        z-index: 10;
-        height: auto;
-        overflow-y: auto;
-        opacity: 1;
-
-        @apply(--paper-input-autocomplete-chips-suggestion-container);
-      }
-
-      paper-material.autocomplete-suggestion-container.hidden {
-        display: none;
+      
+      paper-material{
+        @apply(--suggetions-box);
       }
 
       paper-material.autocomplete-suggestion-container .suggestion-item {
@@ -221,7 +211,7 @@ Example:
 
     </style>
 
-    <paper-input-container id="paperInputContainer" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
+    <paper-input-container on-tap="_onPaperContainerTap" id="paperInputContainer" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
 
       <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}">
 
@@ -261,65 +251,66 @@ Example:
     <template is="dom-if" if="[[errorMessage]]">
       <paper-input-error>[[errorMessage]]</paper-input-error>
     </template>
+   <div id="dropdownTarget"></div>
   </paper-input-container>
-  <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
-    <template is="dom-if" if="{{_loading}}">
-        <div id="loading">
-          <content select="[loading]"></content>
-        </div>
-      </template>
-
-    <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]" not-circular="[[notCircular]]">
-      <template is="dom-if" if="[[!groupedSuggestions]]">
-          <template is="dom-repeat" items="{{_suggestions}}">
-            <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
-              <template is="dom-if" if="[[addSuggetionsImage]]">
-                <template is="dom-if" if="{{item.imgUrl}}">
-                  <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+  <iron-dropdown id="dropdown" opened="{{_opened}}" horizontal-align="left" vertical-align="top" vertical-offset="0">
+    <paper-material slot="dropdown-content" id="suggestionsPanel" elevation="3" class="dropdown-content autocomplete-suggestion-container" animated="[[animated]]">
+      <template is="dom-if" if="{{_loading}}">
+          <div id="loading">
+            <content select="[loading]"></content>
+          </div>
+        </template>
+      <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]" not-circular="[[notCircular]]">
+        <template is="dom-if" if="[[!groupedSuggestions]]">
+            <template is="dom-repeat" items="{{_suggestions}}">
+              <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+                <template is="dom-if" if="[[addSuggetionsImage]]">
+                  <template is="dom-if" if="{{item.imgUrl}}">
+                    <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+                  </template>
+                  <template is="dom-if" if="{{!item.imgUrl}}">
+                    <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+                  </template>
+                    <paper-item-body>
+                      <div>[[item.text]]</div>
+                    </paper-item-body>
                 </template>
-                <template is="dom-if" if="{{!item.imgUrl}}">
-                  <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+                <template is="dom-if" if="[[!addSuggetionsImage]]">
+                <paper-item-body>
+          <div>[[item.text]]</div>
+        </paper-item-body>
                 </template>
-                  <paper-item-body>
-                    <div>[[item.text]]</div>
-                  </paper-item-body>
-              </template>
-              <template is="dom-if" if="[[!addSuggetionsImage]]">
-              <paper-item-body>
-        <div>[[item.text]]</div>
-      </paper-item-body>
-              </template>
-      </paper-icon-item>
-      </template>
-      </template>
-      <template is="dom-if" if="[[groupedSuggestions]]">
-          <template is="dom-repeat" items="{{_suggestions}}">
-            <paper-icon-item class="suggestion-item suggestion-group" tabindex="-1" disabled>
-              <template is="dom-if" if="[[item.groupIcon]]">
-                <iron-icon class="icon" icon="[[item.groupIcon]]" item-icon></iron-icon>
-              </template>
-      <paper-item-body>
-        <div>[[item.groupName]]</div>
-      </paper-item-body>
-      </paper-icon-item>
-      <template is="dom-repeat" items="{{item.items}}">
-              <paper-icon-item class="suggestion-item suggestion-group-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
-                <template is="dom-if" if="{{item.imgUrl}}">
-                  <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+        </paper-icon-item>
+        </template>
+        </template>
+        <template is="dom-if" if="[[groupedSuggestions]]">
+            <template is="dom-repeat" items="{{_suggestions}}">
+              <paper-icon-item class="suggestion-item suggestion-group" tabindex="-1" disabled>
+                <template is="dom-if" if="[[item.groupIcon]]">
+                  <iron-icon class="icon" icon="[[item.groupIcon]]" item-icon></iron-icon>
                 </template>
-      <template is="dom-if" if="{{!item.imgUrl}}">
-                  <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
-                </template>
-      <paper-item-body>
-        <div>[[item.text]]</div>
-      </paper-item-body>
-      </paper-icon-item>
-      </template>
-      </template>
-      </template>
-    </paper-autocomplete-results>
-
-  </paper-material>
+        <paper-item-body>
+          <div>[[item.groupName]]</div>
+        </paper-item-body>
+        </paper-icon-item>
+        <template is="dom-repeat" items="{{item.items}}">
+                <paper-icon-item class="suggestion-item suggestion-group-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+                  <template is="dom-if" if="{{item.imgUrl}}">
+                    <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+                  </template>
+        <template is="dom-if" if="{{!item.imgUrl}}">
+                    <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+                  </template>
+        <paper-item-body>
+          <div>[[item.text]]</div>
+        </paper-item-body>
+        </paper-icon-item>
+        </template>
+        </template>
+        </template>
+      </paper-autocomplete-results>
+    </paper-material>
+  </iron-dropdown>
   </template>
   <script>
     Polymer({
@@ -454,6 +445,11 @@ Example:
           },
         },
         
+        _opened: {
+          type: Boolean,
+          value: false
+        },
+        
         _focused: {
           type: Boolean,
           value: false,
@@ -529,6 +525,16 @@ Example:
         if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
           this._inputElement.focus();
         }
+      },
+      
+      _onPaperContainerTap: function(e){
+        if(e.srcElement.tagName === 'INPUT'){
+          return;
+        }
+        if(e.srcElement.closest('paper-chip')){
+          return;
+        }
+        this._search(this._safeInputValue);
       },
 
       _local_keyup: function (e) {
@@ -762,6 +768,7 @@ Example:
       },
 
       attached: function() {
+        this.$.dropdown.set('positionTarget', this.$.dropdownTarget);
       },
 
       detached: function() {
@@ -770,13 +777,14 @@ Example:
       // Element Behavior
 
       hideSuggestionsPanel: function () {
-        this.$.suggestionsPanel.classList.add('hidden');
+        this.set('_opened', false);
       },
 
       showSuggestionsPanel: function () {
         this.fire('before-show-suggestion-panel');
         this._calculateSuggestionPanelPosition();
         this.$.suggestionsPanel.classList.remove('hidden');
+        this.set('_opened', true);
         this.async(function () {
           if (this.isSuggestionsOnBottom) {
             this.$.autocompleteResults.selectFirst();
@@ -928,6 +936,8 @@ Example:
       _onFocusedChanged: function(){
         if(this._focused){
           this.$.input.focus();
+        } else {
+          this.hideSuggestionsPanel();
         }
       }
     });
