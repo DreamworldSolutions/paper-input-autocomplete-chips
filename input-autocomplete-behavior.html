@@ -360,10 +360,6 @@
       var relativeFocusedTarget = e.relatedTarget || e.explicitOriginalTarget;
       if ((!relativeFocusedTarget) || ((relativeFocusedTarget) && (!this._menuElement.contains(relativeFocusedTarget)))) {
         this.setSuggestions([]);
-        if(this.inputValue){
-          this._createChip();
-          this.inputValue = '';
-        }
       }
     },
 
