@@ -936,12 +936,12 @@ Example:
       _onFocusedChanged: function(){
         if(this._focused){
           this.$.input.focus();
+          this.setSuggestions([]);
+        } else {
           if(this.inputValue){
             this._createChip();
             this.inputValue = '';
           }
-          this.setSuggestions([]);
-        } else {
           this.hideSuggestionsPanel();
         }
       }

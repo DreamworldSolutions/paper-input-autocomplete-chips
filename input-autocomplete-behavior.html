@@ -519,7 +519,7 @@
         var matchedStartsWith = [];
         var matchedContains = [];
         var matched = [];
-        var candidates = this.localCandidates;
+        var candidates = this._filtredLocalCandidates;
         var noSuggestInactive = Boolean(this.noSuggestInactive);
 
         if (candidates && candidates.length) {
