@@ -360,6 +360,12 @@
       var relativeFocusedTarget = e.relatedTarget || e.explicitOriginalTarget;
       if ((!relativeFocusedTarget) || ((relativeFocusedTarget) && (!this._menuElement.contains(relativeFocusedTarget)))) {
         this.setSuggestions([]);
+        if(!e.relatedTarget) {
+          return;
+        }
+        if(e.relatedTarget.tagName === "PAPER-INPUT-AUTOCOMPLETE-CHIPS") {
+          this.$.input.focus();
+        }
       }
     },
 
