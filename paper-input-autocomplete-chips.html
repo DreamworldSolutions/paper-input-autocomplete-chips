@@ -222,7 +222,7 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
         <template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]"  on-keyup="_onChipSelected" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
+          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" on-tap="_onChipTap" on-keyup="_onChipSelected" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
@@ -585,6 +585,10 @@ Example:
           } 
          this.$.input.focus();
         }
+        
+        if(e.which === 13){
+          this._onChipTap(e);
+        }
       },
       _manageFilteredCandidates: function(){
         if(!this.localCandidates || !this.selectedObjects) {
@@ -943,6 +947,27 @@ Example:
           }
           this.hideSuggestionsPanel();
         }
+      },
+      
+      /**
+       * Invoke whenever chip or its childern get tapped.
+       * Fire `paper-input-autocomplete-chip-tapped` with some data based on certain condition.
+       *
+       * @param {Object} e - event object.
+       */
+      _onChipTap: function(e){
+        var srcElement = e.srcElement || null;
+        var data = e.model && e.model.__data__ ? e.model.__data__ : null;
+        
+        if(!srcElement || srcElement.tagName === "IRON-ICON" || !data){
+         return;
+        }
+        
+        if(!data.item || !data.item.text || typeof data.index !== "number"){
+          return;
+        }
+        
+        this.fire('paper-input-autocomplete-chip-tapped', {index: data.index, value: data.item.text});
       }
     });
   </script>
