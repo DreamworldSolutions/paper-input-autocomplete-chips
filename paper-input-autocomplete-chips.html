@@ -37,7 +37,7 @@ Example:
       :host {
         --autocomplete-chip-margin: 4px 4px 4px 4px;
         --autocomplete-line-height: 40px;
-
+        --count-background-color: light-gray;
         display: block;
         position: relative;
 
@@ -65,6 +65,8 @@ Example:
 
       .complete-input-container {
         display: block;
+        max-height: 300px;
+        overflow-y: auto;
         overflow-x: hidden;
         -webkit-flex: 1;
         flex: 1;
@@ -199,7 +201,23 @@ Example:
       .autocomplete-suggestions .suggestion-item.suggestion-group-item {
         padding-left: 56px;
       }
-
+      
+      .count {
+        color: var(--primary-text-color) !important;
+        background: var(--paper-grey-300);
+        display: inline-flex;
+        border-radius: 39px;
+        line-height: 22px;
+        font-size: 16px;
+        padding: 5px;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        min-width: 22px;
+      }
+      label {
+        padding-bottom: 8px;
+      }
       :host(.no-display-input-edit-line) paper-input-container {
           --paper-input-container-underline: {
               display: none;
@@ -218,8 +236,7 @@ Example:
         <content select="[prefix]"></content>
       </div>
 
-      <label hidden$="[[!label]]">[[label]]</label>
-
+      <label hidden$="[[!label]]">[[label]]&nbsp;<template is="dom-if" if="[[!_hideCount]]"><span class="count">[[_count]]</span></template></label>
       <div class="complete-input-container" id="inputTagsContainer">
         <template is="dom-repeat" items="[[selectedObjects]]">
           <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" on-tap="_onChipTap" on-keyup="_onChipSelected" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
@@ -374,7 +391,16 @@ Example:
           type: String,
           notify: true,
         },
-
+        
+        /**
+         * Input property.
+         * store status about whether to display count or not.
+         */
+        hideCount: {
+          type: Boolean,
+          value: false
+        },
+        
         placeholderAfterSelected: {
           type: String,
         },
@@ -472,7 +498,23 @@ Example:
         
         _filtredLocalCandidates: {
           type: Array
-        }
+        },
+        
+        /**
+         * Store status about whether to display count or not.
+         */
+        _hideCount: {
+          type: Boolean,
+          value: false
+        },
+        
+        /**
+         * store number of elements of value available in input.
+         */
+        _count: {
+          type: Number
+        },
+        
       },
 
       get _paperInputContainerElement() {
@@ -569,8 +611,21 @@ Example:
         '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)',
         '_manageFilteredCandidates(localCandidates.splices)',
         '_manageFilteredCandidates(selectedObjects.splices)',
-        '_manageFocused(focused)'
+        '_manageFocused(focused)',
+        '_manageCount(value)',
+        '_manageCount(value.length)',
+        '_manageHideCount(hideCount)',
+        '_manageHideCount(_count)'
       ],
+      
+      scrollToBottom: function(){
+        var scrollElement = this.$$('#inputTagsContainer');
+        if(!scrollElement || scrollElement.scrollHeight === scrollElement.clientHeight){
+          return;
+        }
+        
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      },
       
       _onChipSelected: function(e){
         if(e.which === 46) {
@@ -968,6 +1023,31 @@ Example:
         }
         
         this.fire('paper-input-autocomplete-chip-tapped', {index: data.index, value: data.item.text});
+      },
+      
+      
+      _manageHideCount: function(){
+        if(this.hideCount || !this._count){
+          this.set('_hideCount', true);
+          return;
+        }
+        
+        this.set('_hideCount', false);
+      },
+      
+      /**
+       * Invoke when value and its elements got changed. 
+       * set the value of `count` to be display to the user.
+       *
+       * @param {Object} e - event object.
+       */
+      _manageCount: function(){
+        if(!this.value || !this.value.length){
+          this.set('_count', 0);
+          return;
+        }
+        
+        this.set('_count', this.value.length);
       }
     });
   </script>
