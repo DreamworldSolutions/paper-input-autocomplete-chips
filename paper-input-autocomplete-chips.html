@@ -496,6 +496,15 @@ Example:
           value: false
         },
         
+        /**
+         * Input Property.
+         * When true, serial number is not auto focused on item add/remove
+         */
+        noAutoFocusInSerialNumber: {
+          type: Boolean,
+          value: false
+        },
+        
         _filtredLocalCandidates: {
           type: Array
         },
@@ -690,7 +699,9 @@ Example:
         this._updatePlaceholderAfterSelected();
         this._updateHiddenInputTextForFloatLabel();
         this.selectedObject = null;
-        this.$.input.focus();
+        if(!this.noAutoFocusInSerialNumber){
+          this.$.input.focus();
+        }
         this._setValue();
       },
 
