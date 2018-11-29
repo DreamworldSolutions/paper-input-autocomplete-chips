@@ -21,6 +21,12 @@
 <!--
 An element providing a solution to no problem in particular.
 
+Features
+ -Shows Serial number
+ -Provides serial number suggetion
+ -provides color base on error or dublicate
+ -If product is returned then chip shows returned text besides of chip
+ 
 Example:
 
     <paper-input-autocomplete-chips></paper-input-autocomplete-chips>
@@ -472,6 +478,15 @@ Example:
         
         _opened: {
           type: Boolean,
+          value: false
+        },
+        
+        /**
+         * True to show serial number delete warning.
+         */
+        showRemoveSrError: {
+          type: Boolean,
+          notify: true,
           value: false
         },
         
