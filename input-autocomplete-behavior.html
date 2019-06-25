@@ -508,8 +508,6 @@
     _search: function(term){
       var that = this;
       this.xmlhttp;
-
-      this.debounce('search', function(){
         if ((term === '') && (!this.searchIfEmpty)) {
           this.setSuggestions(this._filtredLocalCandidates);
           return;
@@ -606,7 +604,6 @@
         else{
           this.setSuggestions(matched);
         }
-      },250);
     },
 
     _scapeString: function(term){
